@@ -7,7 +7,11 @@
 //
 
 #import "AppDelegate.h"
-
+#import "WeatherView.h"
+#import "ForecastList.h"
+#import "ParticleController.h"
+#import "ViewController.h"
+#import "failView.h"
 @interface AppDelegate ()
 
 @end
@@ -16,7 +20,21 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    //WeatherView *view=[[WeatherView alloc]init];
+    //ParticleController *view=[[ParticleController alloc]init];
+    //ForecastList *view=[[ForecastList alloc]init];
+    //failView *view=[[failView alloc]init];
+    ViewController *view=[[ViewController alloc]init];
+    self.window=[[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
+    self.window.rootViewController=view;
+    [self.window makeKeyAndVisible];
+//    if ([[UIApplication sharedApplication]currentUserNotificationSettings].types!=UIUserNotificationTypeNone) {
+//        [self addLocalNotification];
+//    }else{
+//        [[UIApplication sharedApplication]registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound  categories:nil]];
+//    }
+    
+    
     return YES;
 }
 
@@ -40,6 +58,36 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    [self removeNotification];
 }
 
+#pragma mark - 私有方法
+#pragma mark 添加本地通知
+-(void)addLocalNotification{
+    
+    //定义本地通知对象
+    UILocalNotification *notification=[[UILocalNotification alloc]init];
+    //设置调用时间
+    notification.fireDate=[NSDate dateWithTimeIntervalSinceNow:10.0];//通知触发的时间，10s以后
+    notification.repeatInterval=2;//通知重复次数
+    //notification.repeatCalendar=[NSCalendar currentCalendar];//当前日历，使用前最好设置时区等信息以便能够自动同步时间
+    
+    //设置通知属性
+    notification.alertBody=@"需要联网，访问蜂窝数据？"; //通知主体
+    notification.applicationIconBadgeNumber=1;//应用程序图标右上角显示的消息数
+    notification.alertAction=@"打开应用"; //待机界面的滑动动作提示
+    notification.alertLaunchImage=@"Default";//通过点击通知打开应用时的启动图片,这里使用程序启动图片
+    notification.soundName=UILocalNotificationDefaultSoundName;//收到通知时播放的声音，默认消息声音
+    //notification.soundName=@"msg.caf";//通知声音（需要真机才能听到声音）
+    
+    //设置用户信息
+    notification.userInfo=@{@"id":@1,@"user":@"Kenshin Cui"};//绑定到通知上的其他附加信息
+    
+    //调用通知
+    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+}
+#pragma mark 移除本地通知，在不需要此通知时记得移除
+-(void)removeNotification{
+    [[UIApplication sharedApplication] cancelAllLocalNotifications];
+}
 @end
